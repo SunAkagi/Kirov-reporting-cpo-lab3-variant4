@@ -15,16 +15,13 @@ class MooreMachine:
         self.transitions = []
         self.initial_state = None
 
-
     def state(self, name, output):
         self.states[name] = output
         return self
 
-
     def transition(self, source, target, on):
         self.transitions.append(Transition(source, target, on))
         return self
-
 
     def initial(self, state_name):
         self.initial_state = state_name
@@ -37,7 +34,6 @@ class MooreInterpreter:
         self.current_state = machine.initial_state
         self._validate()
 
-
     def _validate(self):
         assert self.current_state in self.machine.states, \
             "Initial state undefined"
@@ -47,14 +43,12 @@ class MooreInterpreter:
             assert t.target in self.machine.states, \
                 f"Undefined target: {t.target}"
 
-
     def step(self, input_signal):
         for t in self.machine.transitions:
             if t.source == self.current_state and t.on == input_signal:
                 self.current_state = t.target
                 break
         return self.machine.states[self.current_state]
-
 
     def trace(self, inputs):
         output = [self.machine.states[self.current_state]]

@@ -16,7 +16,6 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["press", "press", "press"])
         self.assertEqual(trace, ["0", "1", "0", "1"])
 
-
     def test_traffic_light(self):
         fsm = MooreMachine("TrafficLight") \
             .state("Red", output="STOP") \
@@ -31,7 +30,6 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["timer", "timer", "timer", "timer"])
         self.assertEqual(trace, ["STOP", "GO", "SLOW", "STOP", "GO"])
 
-
     def test_no_transition(self):
         fsm = MooreMachine("Static") \
             .state("Idle", output="WAIT") \
@@ -41,7 +39,6 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["unknown", "invalid"])
         self.assertEqual(trace, ["WAIT", "WAIT", "WAIT"])
 
-
     def test_invalid_state_reference(self):
         fsm = MooreMachine("Invalid") \
             .state("A", output="A") \
@@ -50,7 +47,6 @@ class TestMooreFSM(unittest.TestCase):
         fsm.transitions.append(Transition("A", "B", "go"))
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
-
 
     def test_invalid_initial_state(self):
         fsm = MooreMachine("BadInit")
