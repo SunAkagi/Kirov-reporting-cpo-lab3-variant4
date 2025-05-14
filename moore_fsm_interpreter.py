@@ -1,8 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
-from graphviz import Digraph
-from tabulate import tabulate
+from typing import Dict, List, Optional, Any
 
 logging.basicConfig(level=logging.INFO)
 
@@ -10,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 @dataclass
 class State:
     name: str
-    output: str
+    output: Any
 
 @dataclass
 class Transition:
@@ -25,7 +23,7 @@ class MooreMachine:
     transitions: List[Transition] = field(default_factory=list)
     initial_state: Optional[str] = None
 
-    def state(self, name: str, output: str):
+    def state(self, name: str, output: Any):
         self.states[name] = State(name, output)
         return self
 
@@ -50,7 +48,7 @@ class MooreInterpreter:
             assert t.source in self.machine.states, f"Undefined source: {t.source}"
             assert t.target in self.machine.states, f"Undefined target: {t.target}"
 
-    def step(self, event: str) -> str:
+    def step(self, event: str) -> Any:
         for t in self.machine.transitions:
             if t.source == self.current_state and t.event == event:
                 logging.info(f"Transition: {t.source} --[{event}]--> {t.target}")
@@ -59,24 +57,21 @@ class MooreInterpreter:
         logging.warning(f"No transition for event '{event}' from state '{self.current_state}'")
         return self.machine.states[self.current_state].output
 
-    def trace(self, events: List[str]) -> List[str]:
+    def trace(self, events: List[str]) -> List[Any]:
         outputs = [self.machine.states[self.current_state].output]
         for e in events:
             outputs.append(self.step(e))
         return outputs
 
-# -- Visualization -- #
-def visualize(machine: MooreMachine) -> str:
-    dot = Digraph(name=machine.name)
-    for state in machine.states.values():
-        dot.node(state.name, label=f"{state.name}\n{state.output}")
+# -- Text Visualization -- #
+def print_transitions(machine: MooreMachine):
+    """Simple text-based visualization without external dependencies"""
+    print(f"\nFSM: {machine.name}")
+    print("States:", list(machine.states.keys()))
+    print("Initial state:", machine.initial_state)
+    print("\nTransitions:")
     for t in machine.transitions:
-        dot.edge(t.source, t.target, label=t.event)
-    return dot.source
-
-def print_transition_table(machine: MooreMachine):
-    rows = [(t.source, t.event, t.target) for t in machine.transitions]
-    print(tabulate(rows, headers=["From", "Event", "To"], tablefmt="github"))
+        print(f"  {t.source} --[{t.event}]--> {t.target}")
 
 # -- Example Usage -- #
 def traffic_light_example():
@@ -93,11 +88,8 @@ def traffic_light_example():
     trace = interpreter.trace(["timer", "timer", "timer", "timer"])
     print("Trace Output:", trace)
 
-    print("\nDOT Visualization:")
-    print(visualize(fsm))
-
-    print("\nTransition Table:")
-    print_transition_table(fsm)
+    print("\nText Visualization:")
+    print_transitions(fsm)
 
 if __name__ == "__main__":
     traffic_light_example()
