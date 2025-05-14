@@ -1,18 +1,20 @@
 # Kirov reporting！- lab 2 - variant 4 - eDSL for Moore finite state machine
 
-A Python implementation of a Moore machine interpreter with validation, tracing, and unit tests. Designed for educational purposes to demonstrate finite state machine concepts.
+A Python implementation of a Moore machine interpreter with validation,
+tracing, and unit tests. Designed for educational purposes to demonstrate
+finite state machine concepts.
 
 ## Project Structure
 
 - `moore_fsm_interpreter.py` -- Core implementation:
-  - `Transition` dataclass for state transitions
-  - `MooreMachine` builder class for FSM definition
-  - `MooreInterpreter` class for execution and validation
+   - `Transition` dataclass for state transitions
+   - `MooreMachine` builder class for FSM definition
+   - `MooreInterpreter` class for execution and validation
 - `moore_fsm_interpreter_test.py` -- Unit tests covering:
-  - Basic state transitions
-  - Input tracing
-  - Error handling
-  - Edge cases
+   - Basic state transitions
+   - Input tracing
+   - Error handling
+   - Edge cases
 
 ## Features
 
