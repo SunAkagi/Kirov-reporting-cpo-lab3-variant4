@@ -1,50 +1,42 @@
-import logging
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
-
-logging.basicConfig(level=logging.INFO)
-
-
-# -- Data Models -- #
-@dataclass
-class State:
-    name: str
-    output: Any
+from dataclasses import dataclass
 
 
 @dataclass
 class Transition:
     source: str
     target: str
-    event: str
+    on: str
 
 
-@dataclass
 class MooreMachine:
-    name: str
-    states: Dict[str, State] = field(default_factory=dict)
-    transitions: List[Transition] = field(default_factory=list)
-    initial_state: Optional[str] = None
+    def __init__(self, name):
+        self.name = name
+        self.states = {}
+        self.transitions = []
+        self.initial_state = None
 
-    def state(self, name: str, output: Any):
-        self.states[name] = State(name, output)
+
+    def state(self, name, output):
+        self.states[name] = output
         return self
 
-    def transition(self, source: str, target: str, on: str):
+
+    def transition(self, source, target, on):
         self.transitions.append(Transition(source, target, on))
         return self
 
-    def initial(self, state_name: str):
+
+    def initial(self, state_name):
         self.initial_state = state_name
         return self
 
 
-# -- Interpreter -- #
 class MooreInterpreter:
-    def __init__(self, machine: MooreMachine):
+    def __init__(self, machine):
         self.machine = machine
         self.current_state = machine.initial_state
         self._validate()
+
 
     def _validate(self):
         assert self.current_state in self.machine.states, \
@@ -55,48 +47,29 @@ class MooreInterpreter:
             assert t.target in self.machine.states, \
                 f"Undefined target: {t.target}"
 
-    def step(self, event: str) -> Any:
+
+    def step(self, input_signal):
         for t in self.machine.transitions:
-            if t.source == self.current_state and t.event == event:
-                logging.info(f"Transition: {t.source} --[{event}]--> {t.target}")
+            if t.source == self.current_state and t.on == input_signal:
                 self.current_state = t.target
-                return self.machine.states[self.current_state].output
-        logging.warning(f"No transition for event '{event}' from state '{self.current_state}'")
-        return self.machine.states[self.current_state].output
+                break
+        return self.machine.states[self.current_state]
 
-    def trace(self, events: List[str]) -> List[Any]:
-        outputs = [self.machine.states[self.current_state].output]
-        for e in events:
-            outputs.append(self.step(e))
-        return outputs
 
-# -- Text Visualization -- #
-def print_transitions(machine: MooreMachine):
-    """Simple text-based visualization without external dependencies"""
-    print(f"\nFSM: {machine.name}")
-    print("States:", list(machine.states.keys()))
-    print("Initial state:", machine.initial_state)
-    print("\nTransitions:")
-    for t in machine.transitions:
-        print(f"  {t.source} --[{t.event}]--> {t.target}")
+    def trace(self, inputs):
+        output = [self.machine.states[self.current_state]]
+        for signal in inputs:
+            output.append(self.step(signal))
+        return output
 
-# -- Example Usage -- #
-def traffic_light_example():
-    fsm = MooreMachine("TrafficLight") \
-        .state("Red", output="STOP") \
-        .state("Green", output="GO") \
-        .state("Yellow", output="SLOW") \
-        .transition("Red", "Green", on="timer") \
-        .transition("Green", "Yellow", on="timer") \
-        .transition("Yellow", "Red", on="timer") \
-        .initial("Red")
+
+if __name__ == '__main__':
+    fsm = MooreMachine("Toggle") \
+        .state("Off", output="0") \
+        .state("On", output="1") \
+        .transition("Off", "On", on="press") \
+        .transition("On", "Off", on="press") \
+        .initial("Off")
 
     interpreter = MooreInterpreter(fsm)
-    trace = interpreter.trace(["timer", "timer", "timer", "timer"])
-    print("Trace Output:", trace)
-
-    print("\nText Visualization:")
-    print_transitions(fsm)
-
-if __name__ == "__main__":
-    traffic_light_example()
+    print(interpreter.trace(["press", "press", "press"]))
