@@ -1,8 +1,7 @@
 import unittest
-from moore_fsm_interpreter import MooreMachine, MooreInterpreter
+from moore_fsm_interpreter import MooreMachine, MooreInterpreter, Transition  # 确保导入 Transition
 
 class TestMooreFSM(unittest.TestCase):
-
     def test_simple_toggle(self):
         fsm = MooreMachine("Toggle") \
             .state("Off", output="0") \
@@ -42,15 +41,16 @@ class TestMooreFSM(unittest.TestCase):
         fsm = MooreMachine("Invalid") \
             .state("A", output="A") \
             .initial("A")
-        # Add a bad transition - MUST use Transition class
-        fsm.transitions.append(Transition("A", "B", "go"))  # B does not exist
+
+        # 使用 Transition 类添加无效转换（目标状态 "B" 不存在）
+        fsm.transitions.append(Transition("A", "B", "go"))  # 修正：确保 Transition 已导入
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
 
     def test_invalid_initial_state(self):
         fsm = MooreMachine("BadInit")
         fsm.state("A", output="Hello")
-        fsm.initial("Z")  # Z does not exist
+        fsm.initial("Z")  # "Z" 不存在
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
 
