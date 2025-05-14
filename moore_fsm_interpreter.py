@@ -4,17 +4,20 @@ from typing import Dict, List, Optional, Any
 
 logging.basicConfig(level=logging.INFO)
 
+
 # -- Data Models -- #
 @dataclass
 class State:
     name: str
     output: Any
 
+
 @dataclass
 class Transition:
     source: str
     target: str
     event: str
+
 
 @dataclass
 class MooreMachine:
@@ -35,6 +38,7 @@ class MooreMachine:
         self.initial_state = state_name
         return self
 
+
 # -- Interpreter -- #
 class MooreInterpreter:
     def __init__(self, machine: MooreMachine):
@@ -43,10 +47,13 @@ class MooreInterpreter:
         self._validate()
 
     def _validate(self):
-        assert self.current_state in self.machine.states, "Initial state undefined"
+        assert self.current_state in self.machine.states, \
+            "Initial state undefined"
         for t in self.machine.transitions:
-            assert t.source in self.machine.states, f"Undefined source: {t.source}"
-            assert t.target in self.machine.states, f"Undefined target: {t.target}"
+            assert t.source in self.machine.states, \
+                f"Undefined source: {t.source}"
+            assert t.target in self.machine.states, \
+                f"Undefined target: {t.target}"
 
     def step(self, event: str) -> Any:
         for t in self.machine.transitions:

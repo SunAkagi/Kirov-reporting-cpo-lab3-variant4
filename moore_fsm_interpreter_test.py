@@ -1,5 +1,7 @@
 import unittest
-from moore_fsm_interpreter import MooreMachine, MooreInterpreter, Transition  # 确保导入 Transition
+from moore_fsm_interpreter import \
+    MooreMachine, MooreInterpreter, Transition  # 确保导入 Transition
+
 
 class TestMooreFSM(unittest.TestCase):
     def test_simple_toggle(self):
@@ -13,6 +15,7 @@ class TestMooreFSM(unittest.TestCase):
         interpreter = MooreInterpreter(fsm)
         trace = interpreter.trace(["press", "press", "press"])
         self.assertEqual(trace, ["0", "1", "0", "1"])
+
 
     def test_traffic_light(self):
         fsm = MooreMachine("TrafficLight") \
@@ -28,6 +31,7 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["timer", "timer", "timer", "timer"])
         self.assertEqual(trace, ["STOP", "GO", "SLOW", "STOP", "GO"])
 
+
     def test_no_transition(self):
         fsm = MooreMachine("Static") \
             .state("Idle", output="WAIT") \
@@ -37,15 +41,18 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["unknown", "invalid"])
         self.assertEqual(trace, ["WAIT", "WAIT", "WAIT"])
 
+
     def test_invalid_state_reference(self):
         fsm = MooreMachine("Invalid") \
             .state("A", output="A") \
             .initial("A")
 
         # 使用 Transition 类添加无效转换（目标状态 "B" 不存在）
-        fsm.transitions.append(Transition("A", "B", "go"))  # 修正：确保 Transition 已导入
+        fsm.transitions.append(Transition("A", "B", "go"))  
+        # 修正：确保 Transition 已导入
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
+
 
     def test_invalid_initial_state(self):
         fsm = MooreMachine("BadInit")
@@ -53,6 +60,7 @@ class TestMooreFSM(unittest.TestCase):
         fsm.initial("Z")  # "Z" 不存在
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
+
 
 if __name__ == '__main__':
     unittest.main()
