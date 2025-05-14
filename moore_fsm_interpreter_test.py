@@ -42,9 +42,8 @@ class TestMooreFSM(unittest.TestCase):
         fsm = MooreMachine("Invalid") \
             .state("A", output="A") \
             .initial("A")
-
-        # Add a bad transition
-        fsm.transitions.append(("A", "B", "go"))  # B does not exist
+        # Add a bad transition - MUST use Transition class
+        fsm.transitions.append(Transition("A", "B", "go"))  # B does not exist
         with self.assertRaises(AssertionError):
             MooreInterpreter(fsm)
 
