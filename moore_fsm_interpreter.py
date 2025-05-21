@@ -103,6 +103,7 @@ class MooreInterpreter:
         return self.machine.states[self.current_state]
 
     def trace(self, inputs: List[str]) -> List[str]:
+        assert self.current_state is not None, "Current state must not be None"
         output = [self.machine.states[self.current_state]]
         for signal in inputs:
             output.append(self.step(signal))
