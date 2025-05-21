@@ -2,15 +2,17 @@ from dataclasses import dataclass
 import logging
 from typing import List, Dict
 
-# 配置日志
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Transition:
     source: str
     target: str
     on: str
+
 
 class MooreMachine:
     def __init__(self, name: str):
@@ -47,7 +49,7 @@ class MooreMachine:
         """
         lines = ["| State | Output |", "|-------|--------|"]
         for state, data in self.states.items():
-            lines.append(f"| {state} | {data.output} |")
+            lines.append(f"| {state} | {data} |")
         return "\n".join(lines)
     
     def to_transition_table(self) -> str:
@@ -95,7 +97,6 @@ class MooreInterpreter:
 
 
 if __name__ == '__main__':
-    # 一个复杂示例：电梯控制器 FSM
     elevator = MooreMachine("Elevator") \
         .state("Idle", "Waiting") \
         .state("MovingUp", "Up") \
