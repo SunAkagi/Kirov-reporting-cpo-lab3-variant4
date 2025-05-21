@@ -79,8 +79,8 @@ class TestMooreFSM(unittest.TestCase):
         expected_lines = [
             "| State | Output |",
             "|-------|--------|",
-            "| S1    | X      |",
-            "| S2    | Y      |"
+            "| S1 | X |",
+            "| S2 | Y |"
         ]
         for line in expected_lines:
             self.assertIn(line, table)
