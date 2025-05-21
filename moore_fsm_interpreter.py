@@ -51,7 +51,7 @@ class MooreMachine:
         for state, data in self.states.items():
             lines.append(f"| {state} | {data} |")
         return "\n".join(lines)
-    
+
     def to_transition_table(self) -> str:
         """
         Returns a Markdown table of all transitions.
@@ -66,12 +66,18 @@ class Validator:
     @staticmethod
     def validate(machine: MooreMachine):
         if machine.initial_state not in machine.states:
-            raise AssertionError(f"Initial state '{machine.initial_state}' is not defined.")
+            raise AssertionError(
+                f"Initial state '{machine.initial_state}' is not defined."
+            )
         for t in machine.transitions:
             if t.source not in machine.states:
-                raise AssertionError(f"Transition source '{t.source}' is undefined.")
+                raise AssertionError(
+                    f"Transition source '{t.source}' is undefined."
+                )
             if t.target not in machine.states:
-                raise AssertionError(f"Transition target '{t.target}' is undefined.")
+                raise AssertionError(
+                    f"Transition target '{t.target}' is undefined."
+                )
 
 
 class MooreInterpreter:
@@ -81,7 +87,9 @@ class MooreInterpreter:
         self.current_state = machine.initial_state
 
     def step(self, input_signal: str) -> str:
-        logger.debug(f"Handling input: {input_signal} at state: {self.current_state}")
+        logger.debug(
+            f"Handling input: {input_signal} at state: {self.current_state}"
+        )
         for t in self.machine.transitions:
             if t.source == self.current_state and t.on == input_signal:
                 logger.info(f"Transition: {t.source} --[{t.on}]--> {t.target}")
@@ -110,7 +118,14 @@ if __name__ == '__main__':
         .initial("Idle")
 
     interpreter = MooreInterpreter(elevator)
-    inputs = ["call_up", "arrived", "door_closed", "call_down", "arrived", "door_closed"]
+    inputs = [
+        "call_up",
+        "arrived",
+        "door_closed",
+        "call_down",
+        "arrived",
+        "door_closed"
+    ]
     print("Trace:", interpreter.trace(inputs))
 
     print("\nDOT representation:")
