@@ -76,9 +76,29 @@ class TestMooreFSM(unittest.TestCase):
             .transition("S1", "S2", "next") \
             .initial("S1")
         table = fsm.to_markdown_table()
-        self.assertIn("| State", table)
-        self.assertIn("S1", table)
-        self.assertIn("S2", table)
+        expected_lines = [
+            "| State | Output |",
+            "|-------|--------|",
+            "| S1    | X      |",
+            "| S2    | Y      |"
+        ]
+        for line in expected_lines:
+            self.assertIn(line, table)
+    
+    def test_to_transition_table(self):
+        fsm = MooreMachine("TRTest") \
+            .state("S1", output="A") \
+            .state("S2", output="B") \
+            .transition("S1", "S2", "go") \
+            .initial("S1")
+        table = fsm.to_transition_table()
+        expected_lines = [
+            "| Source | Input | Target |",
+            "|--------|--------|--------|",
+            "| S1 | go | S2 |"
+        ]
+        for line in expected_lines:
+            self.assertIn(line, table)
 
     def test_elevator_controller(self):
         fsm = MooreMachine("Elevator") \
