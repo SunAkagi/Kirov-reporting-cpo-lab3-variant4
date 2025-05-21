@@ -1,6 +1,7 @@
 import unittest
-from moore_fsm_interpreter import \
-    MooreMachine, MooreInterpreter, Transition
+from moore_fsm_interpreter import (
+    MooreMachine, MooreInterpreter, Transition, Validator
+)
 
 
 class TestMooreFSM(unittest.TestCase):
@@ -44,16 +45,60 @@ class TestMooreFSM(unittest.TestCase):
             .state("A", output="A") \
             .initial("A")
 
+        # Add invalid transition to undefined state "B"
         fsm.transitions.append(Transition("A", "B", "go"))
         with self.assertRaises(AssertionError):
-            MooreInterpreter(fsm)
+            Validator.validate(fsm)
 
     def test_invalid_initial_state(self):
         fsm = MooreMachine("BadInit")
         fsm.state("A", output="Hello")
-        fsm.initial("Z")
+        fsm.initial("Z")  # Invalid initial state
         with self.assertRaises(AssertionError):
-            MooreInterpreter(fsm)
+            Validator.validate(fsm)
+
+    def test_to_dot(self):
+        fsm = MooreMachine("DotTest") \
+            .state("A", output="a") \
+            .state("B", output="b") \
+            .transition("A", "B", "go") \
+            .initial("A")
+        dot_output = fsm.to_dot()
+        self.assertIn("digraph", dot_output)
+        self.assertIn("A", dot_output)
+        self.assertIn("B", dot_output)
+        self.assertIn("go", dot_output)
+
+    def test_to_markdown_table(self):
+        fsm = MooreMachine("MDTest") \
+            .state("S1", output="X") \
+            .state("S2", output="Y") \
+            .transition("S1", "S2", "next") \
+            .initial("S1")
+        table = fsm.to_markdown_table()
+        self.assertIn("| State", table)
+        self.assertIn("S1", table)
+        self.assertIn("S2", table)
+
+    def test_elevator_controller(self):
+        fsm = MooreMachine("Elevator") \
+            .state("Idle", "IDLE") \
+            .state("MovingUp", "UP") \
+            .state("MovingDown", "DOWN") \
+            .state("DoorOpen", "OPEN") \
+            .transition("Idle", "MovingUp", "up") \
+            .transition("Idle", "MovingDown", "down") \
+            .transition("MovingUp", "DoorOpen", "arrived") \
+            .transition("MovingDown", "DoorOpen", "arrived") \
+            .transition("DoorOpen", "Idle", "close") \
+            .initial("Idle")
+
+        interpreter = MooreInterpreter(fsm)
+        trace = interpreter.trace(["up", "arrived", "close"])
+        self.assertEqual(trace, ["IDLE", "UP", "OPEN", "IDLE"])
+
+        trace2 = interpreter.trace(["down", "arrived", "close", "up", "arrived", "close"])
+        self.assertEqual(trace2, ["IDLE", "DOWN", "OPEN", "IDLE", "UP", "OPEN", "IDLE"])
 
 
 if __name__ == '__main__':
