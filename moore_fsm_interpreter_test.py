@@ -84,7 +84,7 @@ class TestMooreFSM(unittest.TestCase):
         ]
         for line in expected_lines:
             self.assertIn(line, table)
-    
+
     def test_to_transition_table(self):
         fsm = MooreMachine("TRTest") \
             .state("S1", output="A") \
@@ -117,8 +117,13 @@ class TestMooreFSM(unittest.TestCase):
         trace = interpreter.trace(["up", "arrived", "close"])
         self.assertEqual(trace, ["IDLE", "UP", "OPEN", "IDLE"])
 
-        trace2 = interpreter.trace(["down", "arrived", "close", "up", "arrived", "close"])
-        self.assertEqual(trace2, ["IDLE", "DOWN", "OPEN", "IDLE", "UP", "OPEN", "IDLE"])
+        trace2 = interpreter.trace(
+            ["down", "arrived", "close", "up", "arrived", "close"]
+        )
+        self.assertEqual(
+            trace2,
+            ["IDLE", "DOWN", "OPEN", "IDLE", "UP", "OPEN", "IDLE"]
+        )
 
 
 if __name__ == '__main__':
