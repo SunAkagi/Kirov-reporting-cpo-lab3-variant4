@@ -88,7 +88,9 @@ class MooreInterpreter:
 
     def step(self, input_signal: str) -> str:
         if self.current_state is None:
-            raise RuntimeError("Current state is None, FSM not initialized properly")
+            raise RuntimeError(
+                "Current state is None, FSM not initialized properly"
+            )
 
         logger.debug(
             f"Handling input: {input_signal} at state: {self.current_state}"
