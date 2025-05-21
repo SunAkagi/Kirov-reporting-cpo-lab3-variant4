@@ -42,17 +42,21 @@ class MooreMachine:
         return "\n".join(lines)
 
     def to_markdown_table(self) -> str:
-        rows = [["Source", "Input", "Target"]]
+        """
+        Returns a Markdown table showing state-to-output mapping.
+        """
+        lines = ["| State | Output |", "|-------|--------|"]
+        for state, data in self.states.items():
+            lines.append(f"| {state} | {data.output} |")
+        return "\n".join(lines)
+    
+    def to_transition_table(self) -> str:
+        """
+        Returns a Markdown table of all transitions.
+        """
+        lines = ["| Source | Input | Target |", "|--------|--------|--------|"]
         for t in self.transitions:
-            rows.append([t.source, t.on, t.target])
-        col_widths = [max(len(str(cell)) for cell in column) for column in zip(*rows)]
-        lines = []
-        for i, row in enumerate(rows):
-            line = "| " + " | ".join(cell.ljust(col_widths[j]) for j, cell in enumerate(row)) + " |"
-            lines.append(line)
-            if i == 0:
-                sep = "| " + " | ".join("-" * col_widths[j] for j in range(len(row))) + " |"
-                lines.append(sep)
+            lines.append(f"| {t.source} | {t.on} | {t.target} |")
         return "\n".join(lines)
 
 
