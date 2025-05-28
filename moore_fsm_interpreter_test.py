@@ -135,12 +135,18 @@ class TestMooreFSM(unittest.TestCase):
             .state("Red_Main_Green_Ped", "Main_Stop_Ped_Go") \
             .state("Red_Main_Yellow_Ped", "Main_Stop_Ped_Slow") \
             .initial("Red_Main_Red_Ped") \
-            .transition("Red_Main_Red_Ped", "Green_Main_Red_Ped", "timer_main") \
-            .transition("Green_Main_Red_Ped", "Yellow_Main_Red_Ped", "timer_main") \
-            .transition("Yellow_Main_Red_Ped", "Red_Main_Red_Ped", "timer_main") \
-            .transition("Red_Main_Red_Ped", "Red_Main_Green_Ped", "ped_button") \
-            .transition("Red_Main_Green_Ped", "Red_Main_Yellow_Ped", "timer_ped") \
-            .transition("Red_Main_Yellow_Ped", "Red_Main_Red_Ped", "timer_ped")
+            .transition("Red_Main_Red_Ped", "Green_Main_Red_Ped",
+                        "timer_main") \
+            .transition("Green_Main_Red_Ped", "Yellow_Main_Red_Ped",
+                        "timer_main") \
+            .transition("Yellow_Main_Red_Ped", "Red_Main_Red_Ped",
+                        "timer_main") \
+            .transition("Red_Main_Red_Ped", "Red_Main_Green_Ped",
+                        "ped_button") \
+            .transition("Red_Main_Green_Ped", "Red_Main_Yellow_Ped",
+                        "timer_ped") \
+            .transition("Red_Main_Yellow_Ped", "Red_Main_Red_Ped",
+                        "timer_ped")
 
         interpreter = MooreInterpreter(fsm)
         # Scenario 1: Main road cycle
@@ -156,7 +162,7 @@ class TestMooreFSM(unittest.TestCase):
         )
 
         # Scenario 2: Pedestrian button press
-        interpreter = MooreInterpreter(fsm) # Reset interpreter for new trace
+        interpreter = MooreInterpreter(fsm)  # Reset interpreter for new trace
         trace2 = interpreter.trace(["ped_button", "timer_ped", "timer_ped"])
         self.assertEqual(
             trace2,
