@@ -125,6 +125,61 @@ class TestMooreFSM(unittest.TestCase):
             ["IDLE", "DOWN", "OPEN", "IDLE", "UP", "OPEN", "IDLE"]
         )
 
+    def test_crossroad_traffic_light(self):
+        # States: Red_Main, Green_Main, Yellow_Main, Red_Ped, Green_Ped
+        # Outputs: Main_Stop, Main_Go, Main_Slow, Ped_Stop, Ped_Go
+        fsm = MooreMachine("CrossroadTrafficLight") \
+            .state("Red_Main_Red_Ped", "Main_Stop_Ped_Stop") \
+            .state("Green_Main_Red_Ped", "Main_Go_Ped_Stop") \
+            .state("Yellow_Main_Red_Ped", "Main_Slow_Ped_Stop") \
+            .state("Red_Main_Green_Ped", "Main_Stop_Ped_Go") \
+            .state("Red_Main_Yellow_Ped", "Main_Stop_Ped_Slow") \
+            .initial("Red_Main_Red_Ped") \
+            .transition("Red_Main_Red_Ped", "Green_Main_Red_Ped", "timer_main") \
+            .transition("Green_Main_Red_Ped", "Yellow_Main_Red_Ped", "timer_main") \
+            .transition("Yellow_Main_Red_Ped", "Red_Main_Red_Ped", "timer_main") \
+            .transition("Red_Main_Red_Ped", "Red_Main_Green_Ped", "ped_button") \
+            .transition("Red_Main_Green_Ped", "Red_Main_Yellow_Ped", "timer_ped") \
+            .transition("Red_Main_Yellow_Ped", "Red_Main_Red_Ped", "timer_ped")
+
+        interpreter = MooreInterpreter(fsm)
+        # Scenario 1: Main road cycle
+        trace1 = interpreter.trace(["timer_main", "timer_main", "timer_main"])
+        self.assertEqual(
+            trace1,
+            [
+                "Main_Stop_Ped_Stop",
+                "Main_Go_Ped_Stop",
+                "Main_Slow_Ped_Stop",
+                "Main_Stop_Ped_Stop",
+            ],
+        )
+
+        # Scenario 2: Pedestrian button press
+        interpreter = MooreInterpreter(fsm) # Reset interpreter for new trace
+        trace2 = interpreter.trace(["ped_button", "timer_ped", "timer_ped"])
+        self.assertEqual(
+            trace2,
+            [
+                "Main_Stop_Ped_Stop",
+                "Main_Stop_Ped_Go",
+                "Main_Stop_Ped_Slow",
+                "Main_Stop_Ped_Stop",
+            ],
+        )
+
+    def test_step_input_validation(self):
+        fsm = MooreMachine("Test") \
+            .state("A", "OutputA") \
+            .initial("A")
+        interpreter = MooreInterpreter(fsm)
+
+        with self.assertRaises(TypeError):
+            interpreter.step(123)  # Pass an integer instead of a string
+
+        with self.assertRaises(TypeError):
+            interpreter.step(None)  # Pass None instead of a string
+
 
 if __name__ == '__main__':
     unittest.main()

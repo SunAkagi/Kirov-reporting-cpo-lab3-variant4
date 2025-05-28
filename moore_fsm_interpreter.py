@@ -80,12 +80,21 @@ class Validator:
                 )
 
 
+def validate_string_input(func):
+    def wrapper(self, input_signal: str, *args, **kwargs):
+        if not isinstance(input_signal, str):
+            raise TypeError("Input signal must be a string.")
+        return func(self, input_signal, *args, **kwargs)
+    return wrapper
+
+
 class MooreInterpreter:
     def __init__(self, machine: MooreMachine):
         self.machine = machine
         Validator.validate(machine)
         self.current_state = machine.initial_state
 
+    @validate_string_input
     def step(self, input_signal: str) -> str:
         if self.current_state is None:
             raise RuntimeError(
