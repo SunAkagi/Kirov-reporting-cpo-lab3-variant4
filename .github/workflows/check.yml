@@ -20,7 +20,7 @@ jobs:
       
       - name: Run tests and show coverage report
         run: |
-          coverage run -m pytest --verbose
+          coverage run -m pytest --verbose -s --log-cli-level=DEBUG
           coverage report *.py
 
       - name: Check code style
