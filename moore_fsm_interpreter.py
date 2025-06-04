@@ -105,9 +105,13 @@ class MooreInterpreter:
             raise RuntimeError(
                 "Current state is None, FSM not initialized properly"
             )
-    
+
         logger.debug(
-            f"Handling input: '{input_signal}' at state: '{self.current_state}' with output: '{self.machine.states[self.current_state]}'"
+            logger.debug(
+                f"Handling input: '{input_signal}'\n"
+                f"State: '{self.current_state}'\n"
+                f"Output: '{self.machine.states[self.current_state]}'"
+            )
         )
         for t in self.machine.transitions:
             if t.source == self.current_state and t.on == input_signal:
@@ -115,15 +119,21 @@ class MooreInterpreter:
                 self.current_state = t.target
                 break
         else:
-            logger.info(f"No transition found for input '{input_signal}' at state '{self.current_state}', state unchanged.")
-    
+            logger.info(
+                f"No transition found for input '{input_signal}' at state '{self.current_state}', "
+                "state unchanged."
+            )
+
         output = self.machine.states[self.current_state]
         logger.debug(f"New state: '{self.current_state}', output: '{output}'")
         return output
-    
+
     def trace(self, inputs: List[str]) -> List[str]:
         assert self.current_state is not None, "Current state must not be None"
-        logger.info(f"Starting trace at initial state '{self.current_state}' with output '{self.machine.states[self.current_state]}'")
+        logger.info(
+                    f"Starting trace at initial state '{self.current_state}' "
+                    f"with output '{self.machine.states[self.current_state]}'"
+                    )
         output = [self.machine.states[self.current_state]]
         for signal in inputs:
             logger.info(f"Processing input: '{signal}'")
