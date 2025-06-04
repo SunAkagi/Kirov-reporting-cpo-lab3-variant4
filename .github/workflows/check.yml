@@ -22,7 +22,6 @@ jobs:
         run: |
           coverage run -m pytest --verbose
           coverage report *.py
-          tail -n 50 moore_fsm.log
 
       - name: Check code style
         run: pycodestyle .
