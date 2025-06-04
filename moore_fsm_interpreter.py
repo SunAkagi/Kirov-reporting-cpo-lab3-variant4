@@ -120,8 +120,8 @@ class MooreInterpreter:
                 break
         else:
             logger.info(
-                f"No transition found for input '{input_signal}' at state '{self.current_state}', "
-                "state unchanged."
+                f"No transition found for input '{input_signal}' "
+                f"at state '{self.current_state}', state unchanged."
             )
 
         output = self.machine.states[self.current_state]
