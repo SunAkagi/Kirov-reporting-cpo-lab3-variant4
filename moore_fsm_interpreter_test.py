@@ -1,7 +1,12 @@
 import unittest
+import logging
 from moore_fsm_interpreter import (
     MooreMachine, MooreInterpreter, Transition, Validator
 )
+
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class TestMooreFSM(unittest.TestCase):
