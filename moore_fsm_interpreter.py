@@ -107,11 +107,9 @@ class MooreInterpreter:
             )
 
         logger.debug(
-            logger.debug(
-                f"Handling input: '{input_signal}'\n"
-                f"State: '{self.current_state}'\n"
-                f"Output: '{self.machine.states[self.current_state]}'"
-            )
+            f"Handling input: '{input_signal}'\n"
+            f"State: '{self.current_state}'\n"
+            f"Output: '{self.machine.states[self.current_state]}'"
         )
         for t in self.machine.transitions:
             if t.source == self.current_state and t.on == input_signal:
