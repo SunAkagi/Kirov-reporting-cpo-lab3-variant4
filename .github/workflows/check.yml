@@ -25,7 +25,7 @@ jobs:
           tail -n 50 moore_fsm.log
 
       - name: Upload test logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: moore-fsm-test-logs
           path: moore_fsm.log
