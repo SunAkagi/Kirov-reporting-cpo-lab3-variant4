@@ -5,7 +5,7 @@ from typing import List, Dict
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(message)s"
+    format="%(asctime)s [%(levelname)s] %(message)s",
     stream=sys.stdout
 )
 logger = logging.getLogger(__name__)
