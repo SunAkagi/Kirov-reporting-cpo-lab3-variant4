@@ -1,5 +1,12 @@
 from dataclasses import dataclass
+import logging
 from typing import List, Dict
+
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 
 @dataclass
@@ -88,17 +95,6 @@ class MooreInterpreter:
         self.machine = machine
         Validator.validate(machine)
         self.current_state = machine.initial_state
-        self._print(
-            f"FSM Initialized |
-            Current State: {self.current_state} |
-            Output: {self._current_output()}"
-        )
-
-    def _print(self, message: str):
-        print(f"[FSM PROCESS] {message}")
-
-    def _current_output(self) -> str:
-        return self.machine.states[self.current_state]
 
     @validate_string_input
     def step(self, input_signal: str) -> str:
@@ -107,32 +103,22 @@ class MooreInterpreter:
                 "Current state is None, FSM not initialized properly"
             )
 
-        self._print(f"┌─── Processing Input: '{input_signal}'")
-        self._print(f"│ Current State: {self.current_state}")
+        logger.debug(
+            f"Handling input: {input_signal} at state: {self.current_state}"
+        )
         for t in self.machine.transitions:
             if t.source == self.current_state and t.on == input_signal:
-                self._print(f"│ TRANSITION: {t.source} --[{t.on}]--> {t.target}")
+                logger.info(f"Transition: {t.source} --[{t.on}]--> {t.target}")
                 self.current_state = t.target
                 break
-        else:
-            self._print(f"│ NO TRANSITION for input '{input_signal}'")
-        
-        output = self._current_output()
-        self._print(f"└─── New State: {self.current_state} | Output: '{output}'")
-        return output
+        return self.machine.states[self.current_state]
 
     def trace(self, inputs: List[str]) -> List[str]:
-        outputs = [self._current_output()]
-        self._print(f"\n=== TRACE START ===")
-        self._print(f"Initial Output: '{outputs[0]}'")
-        
-        for i, signal in enumerate(inputs, 1):
-            self._print(f"\nStep {i}:")
-            outputs.append(self.step(signal))
-            self._print(f"Output Sequence: {outputs}")
-        
-        self._print("\n=== TRACE COMPLETE ===")
-        return outputs
+        assert self.current_state is not None, "Current state must not be None"
+        output = [self.machine.states[self.current_state]]
+        for signal in inputs:
+            output.append(self.step(signal))
+        return output
 
 
 if __name__ == '__main__':
